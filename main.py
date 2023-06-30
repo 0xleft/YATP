@@ -15,7 +15,6 @@ from tkinter import filedialog
 
 selected_folder = ''
 
-
 def open_folder():
     folder_path = filedialog.askdirectory()
     global selected_folder
@@ -44,23 +43,31 @@ def convert_images():
     selected_folder = selected_folder + "/small/"
     gui.root.destroy()
 
+def create_error_window(error_message):
+    gui = CustomGUI(400, 100)
+    gui.root.protocol("WM_DELETE_WINDOW", exit_on_close)
+    gui.add_text(error_message, 0, 0).pack()
+    gui.root.mainloop()
 
 def reload_images(description=None, api_key=None):
     global converter
     images = []
     for image in os.listdir(selected_folder):
         if image.endswith('.jpg') or image.endswith('.png'):
-            images.append(ProblemImage(os.path.join(selected_folder, image), ''))
+            try:
+                images.append(ProblemImage(os.path.join(selected_folder, image), ''))
+            except:
+                create_error_window(error_message='Error with image ' + image)
 
     converter = Converter(images, api_key)
 
     # if there are no images in the folders
     if len(images) == 0:
-        sys.exit('No images found')
+        create_error_window(error_message='No images in the folder')
+        return
 
     if description is not None:
         description.delete(0, tkinter.END)
-
 
 def show_api_request():
     global converter
@@ -106,7 +113,7 @@ if __name__ == '__main__':
         show_api_request()
 
     # the open folder gui
-    gui = CustomGUI(100, 100)
+    gui = CustomGUI(400, 400)
     gui.root.protocol("WM_DELETE_WINDOW", exit_on_close)
     gui.add_button('Open folder', lambda: open_folder(), 0, 0, 100, 50).pack(anchor=tkinter.CENTER, expand=True,
                                                                              fill=tkinter.BOTH)
@@ -116,6 +123,8 @@ if __name__ == '__main__':
     monitor_info = screeninfo.get_monitors()[0]
     monitor_width = monitor_info.width
     monitor_height = monitor_info.height
+
+    reload_images(api_key=api_key)
 
     gui = CustomGUI(400, 100)
     gui.root.protocol("WM_DELETE_WINDOW", exit_on_close)

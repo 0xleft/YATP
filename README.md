@@ -1,5 +1,7 @@
 # Welcome to YATP!
 
+This codebase is very messy and was made as a demo.
+
 # Running
 1st way: `run the main.exe` in `output` folder if you want to run the compiled application
 
