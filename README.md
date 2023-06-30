@@ -11,9 +11,6 @@ This codebase is very messy and was made as a demo.
 
 # Compiling
 
-### MAKE SURE TO INSTALL
-```pip install git+https://github.com/0xleft/PPGL.git```
-
 the .exe was compiled using the following command
 ```
 pyinstaller --noconfirm --onefile --windowed --icon "assets/maxresdefault-2512841701.ico" --add-data "./core;core/" "./main.py" -n YATP
