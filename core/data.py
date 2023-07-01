@@ -87,7 +87,7 @@ class Converter:
                                                          "should mention photos. If there are good things you should "
                                                          "also mention them in the summary. MENTION PHOTOS ONLY IN "
                                                          "THE LIST AND NOT IN THE PARAGRAPH. If one photo is idem "
-                                                         "group it up the the last one."},
+                                                         "group it up the the last one. DO NOT MENTION PHOTOS THAT DO NOT EXIST."},
                            {"role": "user",
                             "content": f"Give executive summary "
                                        f"for the "
