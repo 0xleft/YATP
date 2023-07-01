@@ -1,3 +1,4 @@
+import base64
 import copy
 import os
 
@@ -6,54 +7,58 @@ from requests import post
 from docx import Document
 from docx.shared import Pt
 
-def test_api_key(api_key):
-    response = post("http://pageup.lt:8700/pleasegivetomeyes", data=json.dumps({
-        "model": "gpt-3.5-turbo"
-        , "messages": [{"role": "system", "content": "say something"}]}),
-                    headers={"Authorization": f"{api_key}", "Content-Type": "application/json"})
+from core.util import downscale_image
 
-    print(response.text)
-    if 'error' in response.text:
-        return False
-    return True
 
+# TODO REDO THIS ENTIRE THING ITS DAMN UGLY
 class ProblemImage:
     def __init__(self, image_path, description):
         self.image_path = image_path
         self.description = description
-        self.waiting_for_answer = False
 
     def __str__(self):
         return f'Image path: {self.image_path}\nDescription: {self.description}'
 
 
 # the converter class that holds references to all images and converts them later into a nice table in word
+def make_images_smaller(path):
+    try:
+        os.mkdir(path + "/small")
+    except FileExistsError:
+        pass
+
+    for file in os.listdir(path):
+        if file.endswith(".jpg") or file.endswith(".png"):
+            downscale_image(path + "/" + file, path + "/small/small_" + file, 700)
+
+
 class Converter:
-    def __init__(self, images: list[ProblemImage], api_key=None):
-        self.images = images
-        self.api_key = api_key
-        if api_key is not None:
-            if api_key != 'skip':
-                try:
-                    if open('API_KEY').read().strip() != api_key:
-                        open('API_KEY', 'w').write(api_key)
-                except FileNotFoundError:
-                    open('API_KEY', 'w').write(api_key)
+    def __init__(self):
         self.doc = Document()
+        self.images = []
+
+
+    def load_images(self, path):
+        self.images = []
+        for file in os.listdir(path):
+            if file.endswith(".jpg") or file.endswith(".png"):
+                self.images.append(ProblemImage(path + "/" + file, ''))
+
+        print(self.images)
+
+    def get_image_src(self, index):
+        with open(self.images[index].image_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        image_format = "png"
+        if self.images[index].image_path.endswith(".jpg"):
+            image_format = "jpeg"
+        return f"data:image/{image_format};base64,{encoded_string}"
 
     def open(self):
         self.doc.save('FILE_GENERATED_BY_YATP.docx')
         os.system('start FILE_GENERATED_BY_YATP.docx')
 
-    def convert_and_open(self, gui):
-        self.convert(gui)
-        self.open()
-
-    def make_executive_summary(self, gui):
-        if self.api_key is None:
-            gui.show_notification('No api key found', 1000)
-            return
-
+    def make_executive_summary(self, api_key):
         photos = ""
         i = 0
         for image in self.images:
@@ -93,11 +98,10 @@ class Converter:
                                        f"for the "
                                        f"following: "
                                        f"{photos}"}]}),
-                        headers={"Authorization": f"{self.api_key}", "Content-Type": "application/json"})
+                        headers={"Authorization": f"{api_key}", "Content-Type": "application/json"})
 
         if response.status_code != 200:
             print(response.text)
-            gui.show_notification('Error with api' + str(response.text), 5000)
             return
 
         response = response.json()
@@ -113,12 +117,11 @@ class Converter:
         self.doc.add_paragraph('')
         self.doc.add_paragraph('')
 
-    def convert_and_make_executive_summary(self, gui):
-        self.convert(gui)
-        self.make_executive_summary(gui)
-        self.open()
+    def convert_and_make_executive_summary(self, api_key):
+        self.convert()
+        self.make_executive_summary(api_key)
 
-    def convert(self, gui):
+    def convert(self):
 
         def add_cell_data(cell, index, image_path, description):
             paragraph = cell.paragraphs[0]
@@ -137,16 +140,12 @@ class Converter:
         except FileNotFoundError:
             pass
         except PermissionError:
-            gui.show_notification('Please close the file before generating a new one.', 1000)
             return
 
         self.doc = Document()
 
         to_remove = []
         for image in local_images:
-            if image.waiting_for_answer:
-                gui.show_notification('Request has gone to the api wait for answer', 1000)
-                return
             if image.description == '':
                 print(f'No description for {image.image_path}')
                 to_remove.append(image)
@@ -156,7 +155,6 @@ class Converter:
             local_images.remove(image)
 
         if len(local_images) == 0:
-            gui.show_notification('No images have a description :/', 1000)
             return
 
         print(len(local_images))
@@ -176,16 +174,11 @@ class Converter:
                 add_cell_data(row[1], i + 1, row_data[1].image_path, row_data[1].description)
 
     # save document to the folder that we are curently taking images from
-    def save_doc(self, path, gui):
-        self.convert(gui)
+    def save_doc(self, path):
+        self.convert()
         self.doc.save(path + '/FILE_GENERATED_BY_YATP.docx')
-        gui.show_notification('File saved', 1000)
 
     # update description of the image
     def update_description(self, image_id, new_description):
-        print(len(self.images))
-        if self.images[image_id].waiting_for_answer:
-            print('Waiting for answer')
-            return
         self.images[image_id].description = new_description
         print(self.images[image_id].description)

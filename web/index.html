@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>YATP</title>
+    <script type="text/javascript" src="/eel.js"></script>
+</head>
+<style>
+    body {
+        background-color: #2b2b31;
+        color: #d9d9d9;
+        font-family: Arial, sans-serif;
+    }
+
+    button {
+        padding: 10px;
+        margin: 5px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    input {
+        padding: 10px;
+        margin: 5px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background-color: #3e8e41;
+    }
+
+    input:hover {
+        background-color: #3e8e41;
+    }
+
+    * {
+        transition: 0.5s;
+    }
+
+</style>
+<body>
+    <div id="loading" style="display:none; flex-direction: column; height: 100vh; width: 100vw; position: fixed; z-index: 100; background-color: #2b2b31">
+        <h1 style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">Loading...</h1>
+    </div>
+
+    <div id="api_key" style="display:flex; flex-direction: column">
+        <div style="display: flex; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">
+            <h1>Enter your API key</h1>
+            <h3>If you do not have one you can type 'skip' to skip this step</h3>
+            <input type="text" id="api_key_input">
+
+            <button onclick="eel.submit_api_key(document.getElementById('api_key_input').value)">Submit API key</button>
+        </div>
+    </div>
+
+
+    <div id="folder_select" style="display:none; flex-direction: column; height: 100vh; width: 100vw; position: fixed; z-index: 100; background-color: #2b2b31">
+        <h1 style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">Select a folder</h1>
+    </div>
+
+    <div id="convert_confirmation" style="display: none; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">
+        <h1>Are you sure you want to convert this file?</h1>
+        <div style="display: flex; flex-direction: row">
+            <button style="background-color: #619a61" onclick="eel.convert_images(true)">Yes</button>
+            <button style="background-color: #914d4d" onclick="eel.convert_images(false)">No</button>
+        </div>
+    </div>
+
+    <div id="editor" style="display:none; flex-direction: row; height: 100%; width: 100%">
+        <div style="align-items: center; justify-items: center">
+            <!-- left side -->
+            <button onclick="eel.previous_image(document.getElementById('description').value)">LEFT</button>
+        </div>
+        <div style="display: flex; flex-direction: column">
+            <!-- middle -->
+            <img src="" id="display_image" alt="displayed_image">
+            <input type="text" id="description" style="width: 100%; height: 10%">
+            <div style="display: flex; flex-direction: row; width: 100%">
+                <button onclick="eel.preview()">PREVIEW</button>
+                <button onclick="eel.save()">SAVE</button>
+                <button onclick="eel.full()" id="ai_button">FULL</button>
+            </div>
+        </div>
+        <div style="align-items: center">
+            <!-- right side -->
+            <button onclick="eel.next_image(document.getElementById('description').value)">RIGHT</button>
+        </div>
+    </div>
+
+    <script>
+        eel.expose(update_image)
+        function update_image(image, description) {
+            document.getElementById("display_image").src = image
+            document.getElementById("description").value = description
+        }
+
+        eel.expose(update_description)
+        function update_description(description) {
+            document.getElementById("description").value = description
+        }
+
+        eel.expose(show_notification)
+        function show_notification(title, message) {
+            alert(title + "\n" + message)
+        }
+
+        eel.expose(show_api_key_screen)
+        function show_api_key_screen() {
+            document.getElementById("api_key").style.display = "flex"
+        }
+
+        eel.expose(hide_api_key_screen)
+        function hide_api_key_screen() {
+            document.getElementById("api_key").style.display = "none"
+            document.getElementById("folder_select").style.display = "flex"
+            eel.get_selected_folder()
+        }
+
+        eel.expose(hide_folder_select_screen)
+        function hide_folder_select_screen() {
+            document.getElementById("folder_select").style.display = "none"
+            document.getElementById("convert_confirmation").style.display = "flex"
+        }
+
+        eel.expose(hide_convert_confirmation)
+        function hide_convert_confirmation() {
+            document.getElementById("convert_confirmation").style.display = "none"
+            document.getElementById("editor").style.display = "flex"
+        }
+
+        eel.expose(hide_ai_button)
+        function hide_ai_button() {
+            document.getElementById("ai_button").style.display = "none"
+        }
+
+        eel.expose(show_loading_screen)
+        function show_loading_screen() {
+            document.getElementById("loading").style.display = "flex"
+        }
+
+        eel.expose(hide_loading_screen)
+        function hide_loading_screen() {
+            document.getElementById("loading").style.display = "none"
+        }
+    </script>
+</body>
+</html>
