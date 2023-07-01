@@ -147,6 +147,7 @@ if __name__ == '__main__':
     display_image.pack(anchor=tkinter.CENTER, expand=True, fill=tkinter.BOTH)
 
     description = gui.add_input(100, 0, 1000, 100)
+    description.bind("<Return>", lambda event: gui.update_image(display_image, description, ">", converter.images, converter))
 
     gui.add_button('<', lambda: gui.update_image(display_image, description, "<", converter.images, converter), 0, 0,
                    100, 50)
