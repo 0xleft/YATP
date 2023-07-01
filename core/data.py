@@ -42,7 +42,10 @@ class Converter:
         self.images = []
         for file in os.listdir(path):
             if file.endswith(".jpg") or file.endswith(".png"):
-                self.images.append(ProblemImage(path + "/" + file, ''))
+                try:
+                    self.images.append(ProblemImage(path + "/" + file, ''))
+                except Exception as e:
+                    eel.show_notification(f"Error loading image {file}: {e}")
 
         print(self.images)
 
