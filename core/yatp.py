@@ -76,7 +76,7 @@ class YATP:
 
     def save(self):
         self.converter.save_doc(self.selected_folder)
-        eel.show_notification("Saved!")
+        eel.show_notification("Saved!", "Your document has been saved to the selected folder.")
 
     def full(self):
         self.converter.convert_and_make_executive_summary(self.api_key_handler.get_api_key())
