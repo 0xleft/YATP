@@ -8,7 +8,7 @@ from docx import Document
 from docx.shared import Pt
 
 from core.util import downscale_image
-
+import eel
 
 # TODO REDO THIS ENTIRE THING ITS DAMN UGLY
 class ProblemImage:
@@ -101,6 +101,7 @@ class Converter:
                         headers={"Authorization": f"{api_key}", "Content-Type": "application/json"})
 
         if response.status_code != 200:
+            eel.show_notification("Error", "Something went wrong while generating the executive summary. " + response.text)
             print(response.text)
             return
 
@@ -122,7 +123,6 @@ class Converter:
         self.make_executive_summary(api_key)
 
     def convert(self):
-
         def add_cell_data(cell, index, image_path, description):
             paragraph = cell.paragraphs[0]
             run = paragraph.add_run()
@@ -140,6 +140,7 @@ class Converter:
         except FileNotFoundError:
             pass
         except PermissionError:
+            eel.show_notification("Error", "Please close the file FILE_GENERATED_BY_YATP.docx")
             return
 
         self.doc = Document()
