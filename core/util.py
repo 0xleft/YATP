@@ -21,7 +21,7 @@ def downscale_image(input_path, output_path, max_size):
             new_width = int(new_height * ratio)
 
     # Resize the image
-    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+    resized_image = image.resize((new_width, new_height))
 
     # Save the resized image with reduced quality
     resized_image.save(output_path, optimize=True)
