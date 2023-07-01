@@ -13,6 +13,16 @@ class APIKeyHandler:
         eel.expose(self.submit_api_key)
         eel.expose(self.get_api_key)
 
+    def initial_check(self):
+        try:
+            with open("api_key.bin", "r") as f:
+                self.api_key = f.read()
+            if self.api_key_correct():
+                eel.hide_api_key_screen()
+        except:
+            pass
+
+
     def api_key_correct(self):
         eel.show_loading_screen()
         if self.api_key == "skip":
@@ -32,8 +42,12 @@ class APIKeyHandler:
         print(response.text)
         if 'error' in response.text:
             return False
+        self.save_api_key()
         return True
 
+    def save_api_key(self):
+        with open("api_key.bin", "w") as f:
+            f.write(self.api_key)
 
     def submit_api_key(self, api_key):
         self.api_key = api_key

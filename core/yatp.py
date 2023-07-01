@@ -24,6 +24,7 @@ class YATP:
         self.api_key_handler = APIKeyHandler()
         self.image_index = 0
         self.gui = GUI(width, height, 'index.html')
+        self.api_key_handler.initial_check()
 
     def get_selected_folder(self):
         root = tkinter.Tk()
