@@ -1,3 +1,4 @@
+import os
 import tkinter
 from tkinter import filedialog
 
@@ -18,6 +19,7 @@ class YATP:
         eel.expose(self.preview)
         eel.expose(self.save)
         eel.expose(self.full)
+        eel.expose(self.open_image)
         self.converter = Converter()
         self.api_key_handler = APIKeyHandler()
         self.image_index = 0
@@ -78,3 +80,6 @@ class YATP:
     def full(self):
         self.converter.convert_and_make_executive_summary(self.api_key_handler.get_api_key())
         self.converter.open()
+
+    def open_image(self):
+        os.startfile(self.converter.images[self.image_index].image_path)
