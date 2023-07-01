@@ -13,7 +13,7 @@ This codebase is very messy and was made as a demo.
 
 the .exe was compiled using the following command
 ```
-pyinstaller --noconfirm --onefile --windowed --icon "assets/maxresdefault-2512841701.ico" --add-data "./core;core/" "./main.py" -n YATP
+pyinstaller main.py --add-data "bottle.py;bottle" --add-data "venv\lib\site-packages\eel\eel.js;eel" --add-data "web;web" --onefile --noconsole -n YATP
 ```
 
 this will not for you since you need to change the paths to your own
