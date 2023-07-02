@@ -1,4 +1,7 @@
-name: Main
+name: YATP
+
+permissions:
+  contents: write
 
 on:
   push:
