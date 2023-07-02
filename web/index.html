@@ -18,7 +18,7 @@
     button {
         padding: 10px;
         margin: 5px;
-        background-color: #619a61;
+        background-color: #505875;
         color: white;
         border: none;
         border-radius: 5px;
@@ -27,24 +27,23 @@
     input {
         padding: 10px;
         margin: 5px;
-        background-color: #619a61;
+        background-color: #505875;
         color: white;
         border: none;
         border-radius: 5px;
     }
 
     button:hover {
-        background-color: #4a734a;
+        background-color: #667193;
         scale: 1.05;
     }
 
     input:hover {
-        background-color: #4a734a;
-        scale: 1.05;
+        background-color: #667193;
     }
 
     * {
-        transition: 0.5s;
+        transition: 0.25s;
     }
 
 </style>
@@ -101,7 +100,18 @@
         </div>
     </div>
 
-    <script>
+    <script type="text/javascript">
+        function add_enter_listener() {
+            document.body.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    eel.next_image(document.getElementById('description').value)
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
         eel.expose(update_image)
         function update_image(image, description) {
             document.getElementById("display_image").src = image
@@ -126,20 +136,33 @@
         eel.expose(hide_api_key_screen)
         function hide_api_key_screen() {
             document.getElementById("api_key").style.display = "none"
-            document.getElementById("folder_select").style.display = "flex"
             eel.get_selected_folder()
+        }
+
+        eel.expose(show_editor_screen)
+        function show_editor_screen() {
+            document.getElementById("editor").style.display = "flex"
+            add_enter_listener()
+        }
+
+        eel.expose(show_folder_select_screen)
+        function show_folder_select_screen() {
+            document.getElementById("folder_select").style.display = "flex"
         }
 
         eel.expose(hide_folder_select_screen)
         function hide_folder_select_screen() {
             document.getElementById("folder_select").style.display = "none"
+        }
+
+        eel.expose(show_convert_confirmation)
+        function show_convert_confirmation() {
             document.getElementById("convert_confirmation").style.display = "flex"
         }
 
         eel.expose(hide_convert_confirmation)
         function hide_convert_confirmation() {
             document.getElementById("convert_confirmation").style.display = "none"
-            document.getElementById("editor").style.display = "flex"
         }
 
         eel.expose(hide_ai_button)
