@@ -80,8 +80,8 @@ class YATP:
 
     def preview(self):
         eel.show_loading_screen()
-        self.converter.convert()
-        self.converter.open()
+        self.converter.convert_to_doc()
+        self.converter.open_doc()
         eel.hide_loading_screen()
 
     def save(self):
@@ -90,8 +90,9 @@ class YATP:
 
     def full(self):
         eel.show_loading_screen()
-        self.converter.convert_and_make_executive_summary(self.api_key_handler.get_api_key())
-        self.converter.open()
+        self.converter.convert_to_doc()
+        self.converter.make_executive_summary(self.api_key_handler.api_key)
+        self.converter.open_doc()
         eel.hide_loading_screen()
 
     def open_image(self):
