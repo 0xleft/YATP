@@ -96,6 +96,12 @@
             </button>
         </div>
 
+        <div style="position: fixed; top: 10px; right: 10px">
+            <button onclick="hide_all_screens(); hide_api_key_screen()" style="z-index: 99">
+                Open folder
+            </button>
+        </div>
+
         <div style="display: flex; flex-direction: row; width: 99vw; position: fixed; bottom: 10px">
             <button onclick="eel.preview()">Preview</button>
             <button onclick="eel.save()">Save</button>
@@ -116,6 +122,14 @@
     </script>
 
     <script type="text/javascript">
+        function hide_all_screens() {
+            document.getElementById("loading").style.display = "none"
+            document.getElementById("api_key").style.display = "none"
+            document.getElementById("folder_select").style.display = "none"
+            document.getElementById("convert_confirmation").style.display = "none"
+            document.getElementById("editor").style.display = "none"
+        }
+
         eel.expose(update_image)
         function update_image(image, description) {
             document.getElementById("display_image").src = image

@@ -3,6 +3,7 @@ import json
 import eel
 from requests import post
 
+from core.api import request_handler
 from core.gui import GUI
 import atexit
 
@@ -34,10 +35,7 @@ class APIKeyHandler:
             return False
 
     def test_api_key(self):
-        response = post("http://pageup.lt:8700/pleasegivetomeyes", data=json.dumps({
-            "model": "gpt-3.5-turbo"
-            , "messages": [{"role": "system", "content": "say something"}]}),
-                        headers={"Authorization": f"{self.api_key}", "Content-Type": "application/json"})
+        response = request_handler.model_complete_request_prompt(self.api_key, "test", input_prompt="say something")
 
         print(response.text)
         if 'error' in response.text:

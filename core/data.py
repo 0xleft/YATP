@@ -7,10 +7,11 @@ from requests import post
 from docx import Document
 from docx.shared import Pt
 
+from core.api import request_handler
 from core.util import downscale_image
 import eel
 
-# TODO REDO THIS ENTIRE THING ITS DAMN UGLY
+
 class ProblemImage:
     def __init__(self, image_path, description):
         self.image_path = image_path
@@ -37,7 +38,6 @@ class Converter:
         self.doc = Document()
         self.images = []
 
-
     def load_images(self, path):
         self.images = []
         for file in os.listdir(path):
@@ -57,58 +57,27 @@ class Converter:
             image_format = "jpeg"
         return f"data:image/{image_format};base64,{encoded_string}"
 
-    def open(self):
+    def open_doc(self):
         self.doc.save('FILE_GENERATED_BY_YATP.docx')
         os.system('start FILE_GENERATED_BY_YATP.docx')
 
     def make_executive_summary(self, api_key):
         photos = ""
-        i = 0
-
-        for image in self.images:
-            i += 1
-            if image.description == '':
+        for i in range(len(self.images)):
+            if self.images[i].description == '':
                 continue
-            photos += f"P{i}: {image.description} \n"
+            photos += f"P{i + 1}: {self.images[i].description} \n"
 
         if photos == "":
             eel.show_notification("None of the photos have descriptions")
             return
         print(photos)
 
-        response = post("http://pageup.lt:8700/pleasegivetomeyes", data=json.dumps({
-            "model": "gpt-3.5-turbo"
-            , "messages": [{"role": "system", "content": "You need to make an executive summary in english "
-                                                         "referencing all the photos. The executive summary is about "
-                                                         "a building site and what is wrong with the building site. "
-                                                         "The what is wrong part is more important. After the summary "
-                                                         "you need to make a list of things that were bad, "
-                                                         "referencing the photos. You should only mention one issue "
-                                                         "that is summary of a few photos and if the issue is not "
-                                                         "associated with other issues you should mention it "
-                                                         "differently. Just keep in mind that Idem means 'the same as "
-                                                         "the last one'.  Do not use italian words. An executive "
-                                                         "summary should be only  a short paragraph. Try to be as "
-                                                         "concise as possible. DO NOT INCLUDE ANY DISCLAIMERS. Do not "
-                                                         "say P1, P2 say Photo 1, Photo 2. Try to talk about issues "
-                                                         "very shortly. Ok means good. Do not forget to list the "
-                                                         "issues at the bottom. Smoking is not permitted on a "
-                                                         "building site and should be treated as a separate issue. DO "
-                                                         "NOT mention photos in the executive summary you should only "
-                                                         "summarize the descriptions. Only the part where you list "
-                                                         "should mention photos. If there are good things you should "
-                                                         "also mention them in the summary. MENTION PHOTOS ONLY IN "
-                                                         "THE LIST AND NOT IN THE PARAGRAPH. If one photo is idem "
-                                                         "group it up the the last one. DO NOT MENTION PHOTOS THAT DO NOT EXIST."},
-                           {"role": "user",
-                            "content": f"Give executive summary "
-                                       f"for the "
-                                       f"following: "
-                                       f"{photos}"}]}),
-                        headers={"Authorization": f"{api_key}", "Content-Type": "application/json"})
+        response = request_handler.model_complete_request_prompt(api_key, photos)
 
         if response.status_code != 200:
-            eel.show_notification("Error", "Something went wrong while generating the executive summary. " + response.text)
+            eel.show_notification("Error",
+                                  "Something went wrong while generating the executive summary. " + response.text)
             print(response.text)
             return
 
@@ -117,19 +86,12 @@ class Converter:
         response = response['choices'][0]['message']['content']
         self.doc.add_paragraph('')
         self.doc.add_paragraph('')
-        self.doc.add_paragraph('')
-        self.doc.add_paragraph('')
-        self.doc.add_paragraph('')
         self.doc.add_paragraph('Recommended executive summary: ')
         self.doc.add_paragraph(response)
         self.doc.add_paragraph('')
         self.doc.add_paragraph('')
 
-    def convert_and_make_executive_summary(self, api_key):
-        self.convert()
-        self.make_executive_summary(api_key)
-
-    def convert(self):
+    def convert_to_doc(self):
         def add_cell_data(cell, index, image_path, description):
             paragraph = cell.paragraphs[0]
             run = paragraph.add_run()
@@ -140,6 +102,7 @@ class Converter:
 
             cell_paragraph.style.font.size = Pt(12)
 
+        # we dont want to be editing the original list
         local_images = copy.deepcopy(self.images)
 
         try:
@@ -158,11 +121,13 @@ class Converter:
                 print(f'No description for {image.image_path}')
                 to_remove.append(image)
 
-        # this is so it doesnt remove the   images while iterating
+        # this is so it doesnt remove the images while iterating
         for image in to_remove:
             local_images.remove(image)
 
+        # if no images
         if len(local_images) == 0:
+            eel.show_notification("Error", "None of the images have descriptions")
             return
 
         print(len(local_images))
@@ -183,7 +148,7 @@ class Converter:
 
     # save document to the folder that we are curently taking images from
     def save_doc(self, path):
-        self.convert()
+        self.convert_to_doc()
         self.doc.save(path + '/FILE_GENERATED_BY_YATP.docx')
 
     # update description of the image
