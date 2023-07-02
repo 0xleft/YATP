@@ -24,8 +24,7 @@ class YATP:
         self.converter = Converter()
         self.api_key_handler = APIKeyHandler()
         self.image_index = 0
-        self.gui = GUI(width, height, 'index.html')
-        self.api_key_handler.initial_check()
+        GUI(width, height, 'index.html')
 
     def get_selected_folder(self):
         self.image_index = 0
@@ -44,8 +43,7 @@ class YATP:
 
     def convert_images(self, convert):
         eel.show_loading_screen()
-        if self.selected_folder is None:
-            sys.exit(0)
+        print("loading...")
         self.converter.load_images(self.selected_folder)
         if convert:
             make_images_smaller(self.selected_folder)
