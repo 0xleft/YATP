@@ -28,6 +28,7 @@ class YATP:
         self.api_key_handler.initial_check()
 
     def get_selected_folder(self):
+        self.image_index = 0
         eel.show_folder_select_screen()
         root = tkinter.Tk()
         root.attributes("-topmost", True)
