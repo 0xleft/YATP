@@ -79,7 +79,9 @@
     <div id="editor" style="display:none; flex-direction: row; height: 100%; width: 100%">
         <div style="position: fixed; top: 50%; left: 10px; transform: translateY(-50%)">
             <!-- left side -->
-            <button onclick="eel.previous_image(document.getElementById('description').value)" style="z-index: 99">LEFT</button>
+            <button onclick="eel.previous_image(document.getElementById('description').value)" style="z-index: 99">
+                <
+            </button>
         </div>
 
         <div style="display: flex; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">
@@ -89,13 +91,15 @@
 
         <div style="position: fixed; top: 50%; right: 10px; transform: translateY(-50%)">
             <!-- right side -->
-            <button onclick="eel.next_image(document.getElementById('description').value)" style="z-index: 99">RIGHT</button>
+            <button onclick="eel.next_image(document.getElementById('description').value)" style="z-index: 99">
+                >
+            </button>
         </div>
 
         <div style="display: flex; flex-direction: row; width: 99vw; position: fixed; bottom: 10px">
-            <button onclick="eel.preview()">PREVIEW</button>
-            <button onclick="eel.save()">SAVE</button>
-            <button onclick="eel.full()" id="ai_button">FULL</button>
+            <button onclick="eel.preview()">Preview</button>
+            <button onclick="eel.save()">Save</button>
+            <button onclick="eel.full()" id="ai_button">With AI</button>
             <input type="text" id="description" style="width: 100%; height: 10%">
         </div>
     </div>
