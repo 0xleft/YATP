@@ -1,4 +1,5 @@
 import os
+import sys
 import tkinter
 from tkinter import filedialog
 
@@ -27,6 +28,7 @@ class YATP:
         self.api_key_handler.initial_check()
 
     def get_selected_folder(self):
+        eel.show_folder_select_screen()
         root = tkinter.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
@@ -37,17 +39,23 @@ class YATP:
         self.selected_folder = directory_path
         print(self.selected_folder)
         eel.hide_folder_select_screen()
+        eel.show_convert_confirmation()
 
     def convert_images(self, convert):
         eel.show_loading_screen()
+        if self.selected_folder is None:
+            sys.exit(0)
         self.converter.load_images(self.selected_folder)
         if convert:
             make_images_smaller(self.selected_folder)
             self.selected_folder += "/small"
             self.converter.load_images(self.selected_folder)
+        if len(self.converter.images) == 0:
+            eel.show_notification("No images found in selected folder", "proceeding anyway...")
         eel.hide_loading_screen()
         eel.hide_convert_confirmation()
 
+        eel.show_editor_screen()
         eel.update_image(self.converter.get_image_src(self.image_index), self.converter.images[self.image_index].description)
 
     def next_image(self, description):

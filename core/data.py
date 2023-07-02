@@ -64,12 +64,16 @@ class Converter:
     def make_executive_summary(self, api_key):
         photos = ""
         i = 0
+
         for image in self.images:
             i += 1
             if image.description == '':
                 continue
             photos += f"P{i}: {image.description} \n"
 
+        if photos == "":
+            eel.show_notification("None of the photos have descriptions")
+            return
         print(photos)
 
         response = post("http://pageup.lt:8700/pleasegivetomeyes", data=json.dumps({

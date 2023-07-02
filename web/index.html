@@ -18,7 +18,7 @@
     button {
         padding: 10px;
         margin: 5px;
-        background-color: #619a61;
+        background-color: #505875;
         color: white;
         border: none;
         border-radius: 5px;
@@ -27,22 +27,23 @@
     input {
         padding: 10px;
         margin: 5px;
-        background-color: #619a61;
+        background-color: #505875;
         color: white;
         border: none;
         border-radius: 5px;
     }
 
     button:hover {
-        background-color: #4a734a;
+        background-color: #667193;
+        scale: 1.05;
     }
 
     input:hover {
-        background-color: #4a734a;
+        background-color: #667193;
     }
 
     * {
-        transition: 0.5s;
+        transition: 0.25s;
     }
 
 </style>
@@ -70,15 +71,17 @@
         <h1>Confirm</h1>
         <h3>Do you want to convert all images to smaller ones and put them in /small folder?</h3>
         <div style="display: flex; flex-direction: row">
-            <button style="background-color: #619a61" onclick="eel.convert_images(true)">Yes</button>
-            <button style="background-color: #914d4d" onclick="eel.convert_images(false)">No</button>
+            <button style="background-color: #619a61; width: 50%" onclick="eel.convert_images(true)">Yes</button>
+            <button style="background-color: #914d4d; width: 50%" onclick="eel.convert_images(false)">No</button>
         </div>
     </div>
 
     <div id="editor" style="display:none; flex-direction: row; height: 100%; width: 100%">
         <div style="position: fixed; top: 50%; left: 10px; transform: translateY(-50%)">
             <!-- left side -->
-            <button onclick="eel.previous_image(document.getElementById('description').value)" style="z-index: 99">LEFT</button>
+            <button onclick="eel.previous_image(document.getElementById('description').value)" style="z-index: 99">
+                <
+            </button>
         </div>
 
         <div style="display: flex; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">
@@ -88,18 +91,31 @@
 
         <div style="position: fixed; top: 50%; right: 10px; transform: translateY(-50%)">
             <!-- right side -->
-            <button onclick="eel.next_image(document.getElementById('description').value)" style="z-index: 99">RIGHT</button>
+            <button onclick="eel.next_image(document.getElementById('description').value)" style="z-index: 99">
+                >
+            </button>
         </div>
 
         <div style="display: flex; flex-direction: row; width: 99vw; position: fixed; bottom: 10px">
-            <button onclick="eel.preview()">PREVIEW</button>
-            <button onclick="eel.save()">SAVE</button>
-            <button onclick="eel.full()" id="ai_button">FULL</button>
+            <button onclick="eel.preview()">Preview</button>
+            <button onclick="eel.save()">Save</button>
+            <button onclick="eel.full()" id="ai_button">With AI</button>
             <input type="text" id="description" style="width: 100%; height: 10%">
         </div>
     </div>
 
-    <script>
+    <script type="text/javascript">
+        function add_enter_listener() {
+            document.body.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    eel.next_image(document.getElementById('description').value)
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
         eel.expose(update_image)
         function update_image(image, description) {
             document.getElementById("display_image").src = image
@@ -124,20 +140,33 @@
         eel.expose(hide_api_key_screen)
         function hide_api_key_screen() {
             document.getElementById("api_key").style.display = "none"
-            document.getElementById("folder_select").style.display = "flex"
             eel.get_selected_folder()
+        }
+
+        eel.expose(show_editor_screen)
+        function show_editor_screen() {
+            document.getElementById("editor").style.display = "flex"
+            add_enter_listener()
+        }
+
+        eel.expose(show_folder_select_screen)
+        function show_folder_select_screen() {
+            document.getElementById("folder_select").style.display = "flex"
         }
 
         eel.expose(hide_folder_select_screen)
         function hide_folder_select_screen() {
             document.getElementById("folder_select").style.display = "none"
+        }
+
+        eel.expose(show_convert_confirmation)
+        function show_convert_confirmation() {
             document.getElementById("convert_confirmation").style.display = "flex"
         }
 
         eel.expose(hide_convert_confirmation)
         function hide_convert_confirmation() {
             document.getElementById("convert_confirmation").style.display = "none"
-            document.getElementById("editor").style.display = "flex"
         }
 
         eel.expose(hide_ai_button)
