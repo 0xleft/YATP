@@ -79,16 +79,20 @@ class YATP:
         eel.hide_loading_screen()
 
     def preview(self):
+        eel.show_loading_screen()
         self.converter.convert()
         self.converter.open()
+        eel.hide_loading_screen()
 
     def save(self):
         self.converter.save_doc(self.selected_folder)
         eel.show_notification("Saved!", "Your document has been saved to the selected folder.")
 
     def full(self):
+        eel.show_loading_screen()
         self.converter.convert_and_make_executive_summary(self.api_key_handler.get_api_key())
         self.converter.open()
+        eel.hide_loading_screen()
 
     def open_image(self):
         os.startfile(self.converter.images[self.image_index].image_path)
